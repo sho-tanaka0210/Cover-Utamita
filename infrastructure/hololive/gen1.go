@@ -14,7 +14,7 @@ type Gen1s struct {
 }
 
 // 歌ってみたの検索
-func (g Gen1s) SearchUtamita(url string) (*[]infrastructure.Response, error) {
+func (g Gen1s) SearchUtamita() (*[]infrastructure.Response, error) {
 
 	apiKey := os.Getenv("YOUTUBE_API_KEY")
 
@@ -30,7 +30,7 @@ func (g Gen1s) SearchUtamita(url string) (*[]infrastructure.Response, error) {
 	var responses []infrastructure.Response
 
 	for _, channelId := range g.ChannelIds {
-		endpoint := fmt.Sprintf("%s?key=%s&part=snippet&channel_id=%s&publishedAfter=%d&maxResults=10&order=date&q=%s", url, apiKey, channelId, publishedAfter, consts.Query)
+		endpoint := fmt.Sprintf("%s?key=%s&part=snippet&channel_id=%s&publishedAfter=%d&maxResults=10&order=date&q=%s", consts.SearchVideo, apiKey, channelId, publishedAfter, consts.Query)
 		bytes, err := infrastructure.Get(endpoint)
 		if err != nil {
 			return nil, err
