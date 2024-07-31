@@ -19,4 +19,4 @@ const (
 )
 
 // ReGROSSのチャンネルID
-var Regrosses = []string{HiodoshiAo, OtonoseKanade, IchijouRirika, JuufuuteiRaden, TodorokiHajime}
+var ReGrosses = []string{HiodoshiAo, OtonoseKanade, IchijouRirika, JuufuuteiRaden, TodorokiHajime}
