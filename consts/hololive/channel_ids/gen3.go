@@ -1,22 +1,58 @@
 package consts
 
-// 3期生
-const (
-	// 兎田ぺこら
-	UsadaPekora string = "UC1DCedRgGHBdm81E1llLhOQ"
+import "cover-utamita/consts"
 
-	// 潤羽るしあ
-	UruhaRusia string = "UCl_gCybOJRIgOXw6Qb4qJzQ"
+type Gen3 struct {
+	channelId string
+	discordId string
+}
 
-	// 不知火フレア
-	ShiranuiFlare string = "UCvInZx9h3jC2JzsIzoOebWg"
+// ChannelId implements consts.Constant.
+func (h Gen3) ChannelId() string {
+	return h.channelId
+}
 
-	// 白銀ノエル
-	ShiroganeNoel string = "UCdyqAaZDKHXg4Ahi7VENThQ"
+func (h Gen3) DiscordId() string {
+	return h.discordId
+}
 
-	// 宝鐘マリン
-	HoushouMarine string = "UCCzUftO8KOVkV4wQG1vkUvg"
+func (h Gen3) GetDiscordId(channelId string) string {
+	for _, v := range gen3s {
+		if v.channelId == h.channelId {
+			return h.discordId
+		}
+	}
+	return ""
+}
+
+var (
+	UsadaPekora = Gen3{
+		channelId: "UC1DCedRgGHBdm81E1llLhOQ",
+		discordId: "1253705706926899252",
+	}
+
+	UruhaRusia = Gen3{
+		channelId: "UCl_gCybOJRIgOXw6Qb4qJzQ",
+		discordId: "1253705730054291466",
+	}
+
+	ShiranuiFlare = Gen3{
+		channelId: "UCvInZx9h3jC2JzsIzoOebWg",
+		discordId: "1253705759506825249",
+	}
+
+	ShiroganeNoel = Gen3{
+		channelId: "UCdyqAaZDKHXg4Ahi7VENThQ",
+		discordId: "1253705797938974881",
+	}
+
+	HoushouMarine = Gen3{
+		channelId: "UCCzUftO8KOVkV4wQG1vkUvg",
+		discordId: "1253705837600313444",
+	}
+
+	gen3s = []Gen3{
+		UsadaPekora, UruhaRusia, ShiranuiFlare, ShiroganeNoel, HoushouMarine}
+	Gen3s = []consts.Constant{
+		UsadaPekora, UruhaRusia, ShiranuiFlare, ShiroganeNoel, HoushouMarine}
 )
-
-// 3期生のチャンネルID
-var Gen3s = []string{UsadaPekora, UruhaRusia, ShiranuiFlare, ShiroganeNoel, HoushouMarine}

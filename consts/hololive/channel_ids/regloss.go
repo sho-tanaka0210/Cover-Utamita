@@ -1,22 +1,56 @@
 package consts
 
-// ReGROSS
-const (
-	//火威青
-	HiodoshiAo string = "UCMGfV7TVTmHhEErVJg1oHBQ"
+import "cover-utamita/consts"
 
-	// 音乃瀬奏
-	OtonoseKanade string = "UCWQtYtq9EOB4-I5P-3fh8lA"
+type ReGross struct {
+	channelId string
+	discordId string
+}
 
-	// 一条莉々華
-	IchijouRirika string = "UCtyWhCj3AqKh2dXctLkDtng"
+// ChannelId implements consts.Constant.
+func (h ReGross) ChannelId() string {
+	return h.channelId
+}
 
-	// 儒烏風亭らでん
-	JuufuuteiRaden string = "UCdXAk5MpyLD8594lm_OvtGQ"
+func (h ReGross) DiscordId() string {
+	return h.discordId
+}
 
-	// 轟はじめ
-	TodorokiHajime string = "UC1iA6_NT4mtAcIII6ygrvCw"
+func (h ReGross) GetDiscordId(channelId string) string {
+	for _, v := range regrosses {
+		if v.channelId == h.channelId {
+			return h.discordId
+		}
+	}
+	return ""
+}
+
+var (
+	HiodoshiAo = ReGross{
+		channelId: "UCMGfV7TVTmHhEErVJg1oHBQ",
+		discordId: "1253706526250766472",
+	}
+
+	OtonoseKanade = ReGross{
+		channelId: "UCWQtYtq9EOB4-I5P-3fh8lA",
+		discordId: "1253706561705082921",
+	}
+
+	IchijouRirika = ReGross{
+		channelId: "UCtyWhCj3AqKh2dXctLkDtng",
+		discordId: "1253706585792974888",
+	}
+
+	JuufuuteiRaden = ReGross{
+		channelId: "UCdXAk5MpyLD8594lm_OvtGQ",
+		discordId: "1253706618646823023",
+	}
+
+	TodorokiHajime = ReGross{
+		channelId: "UC1iA6_NT4mtAcIII6ygrvCw",
+		discordId: "1253706647495508018",
+	}
+
+	regrosses = []ReGross{HiodoshiAo, OtonoseKanade, IchijouRirika, JuufuuteiRaden, TodorokiHajime}
+	ReGrosses = []consts.Constant{HiodoshiAo, OtonoseKanade, IchijouRirika, JuufuuteiRaden, TodorokiHajime}
 )
-
-// ReGROSSのチャンネルID
-var ReGrosses = []string{HiodoshiAo, OtonoseKanade, IchijouRirika, JuufuuteiRaden, TodorokiHajime}
