@@ -8,7 +8,7 @@ type Response struct {
 		} `json:"id"`
 
 		Snippet *struct {
-			Title string `json:"title"`
+			ChannelId string `json:"channelId"`
 		} `json:"snippet"`
 	} `json:"items"`
 }

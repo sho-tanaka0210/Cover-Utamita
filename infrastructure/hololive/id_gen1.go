@@ -2,6 +2,7 @@ package infrastructure
 
 import (
 	"cover-utamita/consts"
+	"cover-utamita/domain"
 	"cover-utamita/infrastructure"
 	"encoding/json"
 	"fmt"
@@ -10,11 +11,11 @@ import (
 )
 
 type IdGen1 struct {
-	ChannelIds []string
+	Members []consts.Constant
 }
 
 // 歌ってみたの検索
-func (g IdGen1) SearchUtamita() (*[]infrastructure.Response, error) {
+func (g IdGen1) SearchUtamita() (results []domain.Result, err error) {
 
 	apiKey := os.Getenv("YOUTUBE_API_KEY")
 
@@ -27,10 +28,8 @@ func (g IdGen1) SearchUtamita() (*[]infrastructure.Response, error) {
 	t := time.Date(yesterday.Year(), yesterday.Month(), yesterday.Day(), 0, 0, 0, 0, jst)
 	publishedAfter := t.Unix()
 
-	var responses []infrastructure.Response
-
-	for _, channelId := range g.ChannelIds {
-		endpoint := fmt.Sprintf("%s?key=%s&part=snippet&channel_id=%s&publishedAfter=%d&maxResults=10&order=date&q=%s", consts.SearchVideo, apiKey, channelId, publishedAfter, consts.Query)
+	for _, member := range g.Members {
+		endpoint := fmt.Sprintf("%s?key=%s&part=snippet&channel_id=%s&publishedAfter=%d&maxResults=10&order=date&q=%s", consts.SearchVideo, apiKey, member.ChannelId(), publishedAfter, consts.Query)
 		bytes, err := infrastructure.Get(endpoint)
 		if err != nil {
 			return nil, err
@@ -41,8 +40,11 @@ func (g IdGen1) SearchUtamita() (*[]infrastructure.Response, error) {
 		if err != nil {
 			return nil, err
 		}
-		responses = append(responses, response)
+
+		for _, r := range response.Items {
+			results = append(results, domain.Result{ChannelId: r.Snippet.ChannelId, Url: r.Id.VideoId})
+		}
 	}
 
-	return &responses, nil
+	return results, nil
 }
