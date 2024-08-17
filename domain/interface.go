@@ -1,8 +1,11 @@
 package domain
 
-import "cover-utamita/infrastructure"
+type Result struct {
+	ChannelId string
+	Url       string
+}
 
 type Group interface {
 	// 歌ってみたの検索
-	SearchUtamita() (*[]infrastructure.Response, error)
+	SearchUtamita() (result []Result, err error)
 }
