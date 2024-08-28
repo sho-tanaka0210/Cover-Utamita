@@ -39,8 +39,8 @@ func SearchVideoes() (results []domain.Result, err error) {
 		infrastructure.Advent{Members: consts.Advents},
 	}
 
-	for _, member := range hololive {
-		r, err := member.SearchUtamita()
+	for _, members := range hololive {
+		r, err := members.SearchUtamita()
 		if err != nil {
 			return nil, err
 		}
