@@ -4,8 +4,6 @@ import (
 	"cover-utamita/config"
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -14,6 +12,7 @@ func main() {
 	config.LoadEnv()
 
 	botToken := os.Getenv("BOT_TOKEN")
+	fmt.Println("BOTを実行します。")
 	discord, err := discordgo.New(botToken)
 	if err != nil {
 		fmt.Printf("BOTのログインに失敗しました: %v", err)
@@ -24,12 +23,13 @@ func main() {
 		fmt.Printf("疎通に失敗しました。: %v", err)
 	}
 
-	// api.SearchVideoes()
+	App(discord)
 
-	defer discord.Close()
+	// defer discord.Close()
 
-	fmt.Println("Listening...")
-	stopBot := make(chan os.Signal, 1)
-	signal.Notify(stopBot, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	<-stopBot
+	// fmt.Println("Listening...")
+	// stopBot := make(chan os.Signal, 1)
+	// signal.Notify(stopBot, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	// <-stopBot
+	discord.Close()
 }
