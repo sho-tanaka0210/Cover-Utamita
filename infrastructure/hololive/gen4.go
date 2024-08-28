@@ -1,13 +1,15 @@
 package infrastructure
 
 import (
+	"context"
 	"cover-utamita/consts"
 	"cover-utamita/domain"
-	"cover-utamita/infrastructure"
-	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 	"time"
+
+	"google.golang.org/api/option"
+	"google.golang.org/api/youtube/v3"
 )
 
 type Gen4 struct {
@@ -17,7 +19,10 @@ type Gen4 struct {
 // 歌ってみたの検索
 func (g Gen4) SearchUtamita() (results []domain.Result, err error) {
 
-	apiKey := os.Getenv("YOUTUBE_API_KEY")
+	service, err := g.prepareService()
+	if err != nil {
+		return nil, err
+	}
 
 	// 前日の日付を取得
 	yesterday := time.Now().AddDate(0, 0, -1)
@@ -26,25 +31,35 @@ func (g Gen4) SearchUtamita() (results []domain.Result, err error) {
 		return nil, err
 	}
 	t := time.Date(yesterday.Year(), yesterday.Month(), yesterday.Day(), 0, 0, 0, 0, jst)
-	publishedAfter := t.Unix()
 
 	for _, member := range g.Members {
-		endpoint := fmt.Sprintf("%s?key=%s&part=snippet&channel_id=%s&publishedAfter=%d&maxResults=10&order=date&q=%s", consts.SearchVideo, apiKey, member.ChannelId(), publishedAfter, consts.Query)
-		bytes, err := infrastructure.Get(endpoint)
+		call := service.Search.List([]string{"id", "snippet"}).Q(consts.Query).ChannelId(member.ChannelId()).PublishedAfter(t.Format(time.RFC3339)).MaxResults(10)
+		response, err := call.Do()
 		if err != nil {
+			log.Fatalf("APIリクエストに失敗しました: %v", err)
 			return nil, err
 		}
 
-		var response infrastructure.Response
-		err = json.Unmarshal(bytes, &response)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, r := range response.Items {
-			results = append(results, domain.Result{ChannelId: r.Snippet.ChannelId, Url: r.Id.VideoId})
+		for _, item := range response.Items {
+			if item.Id.Kind == "youtube#video" {
+				results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId})
+			}
 		}
 	}
 
 	return results, nil
+}
+
+// YouTube検索のためのサービス
+func (g Gen4) prepareService() (*youtube.Service, error) {
+
+	apiKey := os.Getenv("YOUTUBE_API_KEY")
+	ctx := context.Background()
+	service, err := youtube.NewService(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		log.Fatalf("YouTubeサービスの作成に失敗しました: %v", err)
+		return nil, err
+	}
+
+	return service, nil
 }

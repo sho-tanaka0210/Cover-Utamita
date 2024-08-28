@@ -1,6 +1,9 @@
 package infrastructure
 
 type Response struct {
+	Kind string `json:"kind"`
+	ETag string `json:"etag"`
+
 	Items []*struct {
 		Id *struct {
 			Kind    string `json:"kind"`
@@ -11,4 +14,9 @@ type Response struct {
 			ChannelId string `json:"channelId"`
 		} `json:"snippet"`
 	} `json:"items"`
+
+	PageInfo *struct {
+		TotalResults   int `json:"totalResults"`
+		ResultsPerPage int `json:"resultsPerPage"`
+	} `json:"pageInfo"`
 }
