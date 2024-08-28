@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/bwmarrin/discordgo"
+
 type Result struct {
 	DiscordId string
 	ChannelId string
@@ -12,5 +14,5 @@ type Group interface {
 }
 
 type Post interface {
-	SendMessage() error
+	SendMessage(d *discordgo.Session) error
 }
