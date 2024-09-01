@@ -42,7 +42,7 @@ func (g Council) SearchUtamita() (results []domain.Result, err error) {
 
 		for _, item := range response.Items {
 			if item.Id.Kind == "youtube#video" {
-				results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId})
+				results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
 			}
 		}
 	}
