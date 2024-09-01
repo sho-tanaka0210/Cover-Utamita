@@ -6,6 +6,7 @@ import (
 	"cover-utamita/domain"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -42,7 +43,14 @@ func (g IdGen2) SearchUtamita() (results []domain.Result, err error) {
 
 		for _, item := range response.Items {
 			if item.Id.Kind == "youtube#video" {
-				results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
+				title := item.Snippet.Title
+				if strings.Contains(title, "Original song") &&
+					strings.Contains(title, "歌ってみた") &&
+					strings.Contains(title, "Cover") {
+
+					results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
+				}
+
 			}
 		}
 	}
