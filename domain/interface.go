@@ -3,9 +3,9 @@ package domain
 import "github.com/bwmarrin/discordgo"
 
 type Result struct {
-	DiscordId string
-	ChannelId string
-	Url       string
+	DiscordId string `json:"discordId"`
+	ChannelId string `json:"channelId"`
+	Url       string `json:"url"`
 }
 
 type Group interface {
