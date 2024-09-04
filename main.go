@@ -13,7 +13,7 @@ func main() {
 
 	botToken := os.Getenv("BOT_TOKEN")
 	fmt.Println("BOTを実行します。")
-	discord, err := discordgo.New(botToken)
+	discord, err := discordgo.New("Bot " + botToken)
 	if err != nil {
 		fmt.Printf("BOTのログインに失敗しました: %v", err)
 	}
@@ -22,8 +22,10 @@ func main() {
 	if err != nil {
 		fmt.Printf("疎通に失敗しました。: %v", err)
 	}
-
-	App(discord)
+	err = App(discord)
+	if err != nil {
+		fmt.Printf("YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
+	}
 
 	// defer discord.Close()
 
