@@ -4,9 +4,8 @@ import (
 	"context"
 	"cover-utamita/consts"
 	"cover-utamita/domain"
-	"log"
+	"fmt"
 	"os"
-	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -34,25 +33,13 @@ func (g IdGen3) SearchUtamita() (results []domain.Result, err error) {
 	t := time.Date(yesterday.Year(), yesterday.Month(), yesterday.Day(), 0, 0, 0, 0, jst)
 
 	for _, member := range g.Members {
-		call := service.Search.List([]string{"id", "snippet"}).Q(consts.Query).ChannelId(member.ChannelId()).PublishedAfter(t.Format(time.RFC3339)).MaxResults(10)
-		response, err := call.Do()
+		response, err := domain.SearchVideoes(service, member.ChannelId(), t.Format(time.RFC3339), consts.MaxResults)
 		if err != nil {
-			log.Fatalf("APIリクエストに失敗しました: %v", err)
+			fmt.Printf("APIリクエストに失敗しました: %v", err)
 			return nil, err
 		}
 
-		for _, item := range response.Items {
-			if item.Id.Kind == "youtube#video" {
-				title := item.Snippet.Title
-				if strings.Contains(title, "Original song") ||
-					strings.Contains(title, "歌ってみた") ||
-					strings.Contains(title, "Cover") {
-
-					results = append(results, domain.Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
-				}
-
-			}
-		}
+		results = domain.VideoRetrieval(response.Items, member)
 	}
 
 	return results, nil
@@ -65,7 +52,7 @@ func (g IdGen3) prepareService() (*youtube.Service, error) {
 	ctx := context.Background()
 	service, err := youtube.NewService(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
-		log.Fatalf("YouTubeサービスの作成に失敗しました: %v", err)
+		fmt.Printf("YouTubeサービスの作成に失敗しました: %v", err)
 		return nil, err
 	}
 
