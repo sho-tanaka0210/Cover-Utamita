@@ -19,7 +19,7 @@ import (
 //	err:            エラー
 func SearchVideoes(service *youtube.Service, channelId string, publishedAfter string, maxResults int64) (results *youtube.SearchListResponse, err error) {
 
-	call := service.Search.List([]string{"id", "snippet"}).Q(consts.Query).ChannelId(channelId).PublishedAfter(publishedAfter).MaxResults(maxResults)
+	call := service.Search.List([]string{"id", "snippet"}).ChannelId(channelId).PublishedAfter(publishedAfter).MaxResults(maxResults)
 	results, err = call.Do()
 	if err != nil {
 		fmt.Printf("APIリクエストに失敗しました: %v", err)
@@ -57,5 +57,6 @@ func titleRetrieval(title string) bool {
 		strings.Contains(title, consts.OriginalSong) ||
 		strings.Contains(title, consts.Original) ||
 		strings.Contains(title, consts.CoveredByLarge) ||
-		strings.Contains(title, consts.CoveredBySmall)
+		strings.Contains(title, consts.CoveredBySmall) ||
+		strings.Contains(title, consts.Mv)
 }
