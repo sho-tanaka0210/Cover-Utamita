@@ -1,3 +1,3 @@
 package consts
 
-const BeforeDay int = -2
+const BeforeDay int = -1
