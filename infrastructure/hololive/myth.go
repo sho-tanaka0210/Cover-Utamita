@@ -39,7 +39,7 @@ func (g Myth) SearchUtamita() (results []domain.Result, err error) {
 			return nil, err
 		}
 
-		results = domain.VideoRetrieval(response.Items, member)
+		results = append(results, domain.VideoRetrieval(response.Items, member)...)
 	}
 
 	return results, nil
