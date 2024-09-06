@@ -39,9 +39,6 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}    
     name: image-build
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./
 
     steps:
       - uses: actions/checkout@v3
