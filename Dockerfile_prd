@@ -7,10 +7,6 @@ RUN go mod download
 
 COPY . /code/
 
-RUN touch /code/server-ca.pem && \
-  touch /code/client-cert.pem && \
-  touch /code/client-key.pem && \
-  chmod 600 /code/*.pem
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cover-utamita-bot
 
 FROM alpine:3.17.3
@@ -20,9 +16,6 @@ WORKDIR /app
 RUN apk --update add --no-cache ca-certificates
 
 COPY --from=build /code/cover-utamita-bot /app
-COPY --from=build /code/server-ca.pem /app
-COPY --from=build /code/client-cert.pem /app
-COPY --from=build /code/client-key.pem /app
 
 EXPOSE 80
 
