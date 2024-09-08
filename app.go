@@ -12,6 +12,7 @@ import (
 )
 
 func App(d *discordgo.Session) error {
+
 	// hololive
 	today := time.Now().Format("20060102")
 	filename := today + ".json"
