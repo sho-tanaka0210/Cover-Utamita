@@ -52,11 +52,9 @@ func VideoRetrieval(items []*youtube.SearchResult, member consts.Constant) (resu
 func titleRetrieval(title string) bool {
 
 	return strings.Contains(title, consts.Utattemita) ||
-		strings.Contains(title, consts.CoverLarge) ||
-		strings.Contains(title, consts.CoverSmall) ||
+		strings.Contains(strings.ToLower(title), consts.Cover) ||
 		strings.Contains(title, consts.OriginalSong) ||
 		strings.Contains(title, consts.Original) ||
-		strings.Contains(title, consts.CoveredByLarge) ||
-		strings.Contains(title, consts.CoveredBySmall) ||
+		strings.Contains(strings.ToLower(title), consts.CoveredBy) ||
 		strings.Contains(title, consts.Mv)
 }
