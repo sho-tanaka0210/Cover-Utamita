@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE: asia-northeast1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/utamita:${{ github.sha }}
+  IMAGE: gcr.io/${{ secrets.PROJECT_ID }}/utamita:${{ github.sha }}
 
 jobs:
   test:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Authenticate Docker to Artifact Registry
         run: |
-          gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+          gcloud auth configure-docker --quiet
 
       - run: docker push ${{ env.IMAGE }}
 
