@@ -27,22 +27,22 @@ func (h HololiveWhole) GetDiscordId(channelId string) string {
 
 var (
 	HololiveAll = HololiveWhole{
-		channelId: "",
+		channelId: "UCJFZiqLMntJufDCHc6bQixg",
 		discordId: "1253710858240921740",
 	}
 
 	HololiveENAll = HololiveWhole{
-		channelId: "",
+		channelId: "UCotXwY6s8pWmuWd_snKYjhg",
 		discordId: "1259585771833135144",
 	}
 
 	HololiveIDAll = HololiveWhole{
-		channelId: "",
+		channelId: "UCfrWoRGlawPQDQxxeIDRP0Q",
 		discordId: "1259585707219877931",
 	}
 
 	HololiveDEVIS = HololiveWhole{
-		channelId: "",
+		channelId: "UC10wVt6hoQiwySRhz7RdOUA",
 		discordId: "1259586334935482468",
 	}
 

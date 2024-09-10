@@ -14,6 +14,9 @@ import (
 func SearchVideoes() (results []domain.Result, err error) {
 
 	hololive := []domain.Group{
+		// ALL
+		infrastructure.HololiveAll{Members: consts.Whole},
+
 		// JP
 		infrastructure.Gen0{Members: consts.Gen0s},
 		infrastructure.Gen1{Members: consts.Gen1s},
