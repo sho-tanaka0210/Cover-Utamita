@@ -14,6 +14,7 @@ FROM alpine:3.17.3
 WORKDIR /app
 
 RUN apk --update add --no-cache ca-certificates
+RUN apk --update add --no-cache tzdata
 
 COPY --from=build /code/cover-utamita-bot /app
 

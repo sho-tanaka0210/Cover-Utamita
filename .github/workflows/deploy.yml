@@ -87,7 +87,3 @@ jobs:
           flags: '--cpu=1 --memory=128Mi --max-instances=1 --min-instances=0 --allow-unauthenticated'
           env_vars: |
             GO_ENV=production
-            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-            CLIENT_ID=${{ secrets.CLIENT_ID }}
-            CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
-            YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
