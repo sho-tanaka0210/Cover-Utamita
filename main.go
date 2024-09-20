@@ -4,6 +4,8 @@ import (
 	"cover-utamita/config"
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
