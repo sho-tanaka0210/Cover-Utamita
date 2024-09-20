@@ -27,11 +27,10 @@ func main() {
 		fmt.Printf("YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
 	}
 
-	// defer discord.Close()
+	defer discord.Close()
 
-	// fmt.Println("Listening...")
-	// stopBot := make(chan os.Signal, 1)
-	// signal.Notify(stopBot, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	// <-stopBot
-	discord.Close()
+	fmt.Println("Listening...")
+	stopBot := make(chan os.Signal, 1)
+	signal.Notify(stopBot, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	<-stopBot
 }
