@@ -47,10 +47,9 @@ jobs:
         run: docker build -t ${{ env.IMAGE }} -f Dockerfile_prd .
 
       - name: gcloud auth
-        id: auth
-        uses: 'google-github-actions/auth@v1'
+        uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.GCP_SA_API_KEY }}'
+          credentials_json: ${{ secrets.GCP_SA_API_KEY }}
 
       - name: Authenticate Docker to Artifact Registry
         run: |
@@ -73,7 +72,6 @@ jobs:
           path: cover-utamita
 
       - name: gcloud auth
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
