@@ -74,9 +74,9 @@ jobs:
 
       - name: gcloud auth
         id: auth
-        uses: 'google-github-actions/auth@v1'
+        uses: google-github-actions/auth@v2
         with:
-          credentials_json: '${{ secrets.GCP_SA_API_KEY }}'
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
 
       - name: Deploy to CloudFunctions
         uses: 'google-github-actions/deploy-cloud-functions@v3'
@@ -87,6 +87,7 @@ jobs:
           name: 'utamita-bot'
           runtime: 'go122'
           docker_repository: ${{ env.IMAGE }}
+          entry_point: 'main'
           cpu: 1
           memory: 128Mi
           max_instance_count: 1
