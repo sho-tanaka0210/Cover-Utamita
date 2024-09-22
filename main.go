@@ -17,24 +17,39 @@ func main() {
 	}
 	http.ListenAndServe(":"+port, nil)
 
-	config.LoadEnv()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		config.LoadEnv()
 
-	botToken := os.Getenv("BOT_TOKEN")
-	fmt.Println("BOTを実行します。")
-	discord, err := discordgo.New("Bot " + botToken)
-	if err != nil {
-		fmt.Printf("BOTのログインに失敗しました: %v", err)
-	}
+		botToken := os.Getenv("BOT_TOKEN")
+		fmt.Println("BOTを実行します。")
+		discord, err := discordgo.New("Bot " + botToken)
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "BOTのログインに失敗しました: %v", err)
+			discord.Close()
+			return
+		}
 
-	err = discord.Open()
-	if err != nil {
-		fmt.Printf("疎通に失敗しました。: %v", err)
-	}
-	err = App(discord)
-	if err != nil {
-		fmt.Printf("YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
-	}
+		err = discord.Open()
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "疎通に失敗しました。: %v", err)
+			discord.Close()
+			return
+		}
 
-	fmt.Println("BOTを終了します。")
-	discord.Close()
+		err = App(discord)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Fprintf(w, "YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
+			discord.Close()
+			return
+		}
+
+		discord.Close()
+
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "BOTを終了します。")
+	})
+
 }
