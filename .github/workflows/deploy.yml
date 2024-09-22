@@ -76,24 +76,12 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_API_KEY }}
 
-      - name: Deploy to CloudFunctions
-        uses: 'google-github-actions/deploy-cloud-functions@v3'
-        timeout-minutes: 10
+      - name: Deploy to CloudRun
+        uses: google-github-actions/deploy-cloudrun@v1
         with:
-          project_id: ${{ secrets.PROJECT_ID }}
-          region: 'asia-northeast1'
-          name: 'utamita-bot'
-          runtime: 'go122'
-          docker_repository: ${{ env.IMAGE }}
-          entry_point: 'main'
-          cpu: 1
-          memory: 128Mi
-          max_instance_count: 1
-          min_instance_count: 0
-          secrets: |-
-            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-            CLIENT_ID=${{ secrets.CLIENT_ID }}
-            CLIENT_SECRET=${{ secrets.CLIENT_SECRET }}
-            YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }}
-          service_timeout: '120s'
-          event_trigger_retry: false
+          service: ${{ secrets.PROJECT_ID }}
+          image: ${{ env.IMAGE }}
+          region: asia-northeast1
+          flags: '--cpu=1 --memory=128Mi --max-instances=1 --min-instances=0 --allow-unauthenticated'
+          env_vars: |
+            GO_ENV=production

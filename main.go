@@ -3,14 +3,20 @@ package main
 import (
 	"cover-utamita/config"
 	"fmt"
+	"net/http"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func main() {
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "80"
+	}
+	http.ListenAndServe(":"+port, nil)
+
 	config.LoadEnv()
 
 	botToken := os.Getenv("BOT_TOKEN")
@@ -29,10 +35,6 @@ func main() {
 		fmt.Printf("YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
 	}
 
-	defer discord.Close()
-
-	fmt.Println("Listening...")
-	stopBot := make(chan os.Signal, 1)
-	signal.Notify(stopBot, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
-	<-stopBot
+	fmt.Println("BOTを終了します。")
+	discord.Close()
 }
