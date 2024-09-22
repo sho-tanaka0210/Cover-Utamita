@@ -74,7 +74,7 @@ jobs:
       - name: gcloud auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          credentials_json: ${{ secrets.GCP_SA_API_KEY }}
 
       - name: Deploy to CloudFunctions
         uses: 'google-github-actions/deploy-cloud-functions@v3'
