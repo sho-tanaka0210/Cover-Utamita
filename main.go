@@ -15,7 +15,6 @@ func main() {
 	if port == "" {
 		port = "80"
 	}
-	http.ListenAndServe(":"+port, nil)
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		config.LoadEnv()
@@ -52,4 +51,8 @@ func main() {
 		fmt.Fprintf(w, "BOTを終了します。")
 	})
 
+	fmt.Println("Server is listening on port " + port + "...")
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
+		panic(err)
+	}
 }
