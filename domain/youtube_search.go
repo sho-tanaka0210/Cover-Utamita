@@ -56,5 +56,6 @@ func titleRetrieval(title string) bool {
 		strings.Contains(title, consts.OriginalSong) ||
 		strings.Contains(title, consts.Original) ||
 		strings.Contains(strings.ToLower(title), consts.CoveredBy) ||
-		strings.Contains(title, consts.Mv)
+		strings.Contains(title, consts.Mv) ||
+		strings.Contains(strings.ToLower(title), consts.Official)
 }

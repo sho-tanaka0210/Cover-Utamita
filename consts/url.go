@@ -16,6 +16,7 @@ const (
 	Original     string = "original"
 	CoveredBy    string = "covered by"
 	Mv           string = "MV"
+	Official     string = "official"
 )
 
 // POST
