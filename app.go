@@ -1,6 +1,7 @@
 package main
 
 import (
+	"cover-utamita/consts"
 	domain "cover-utamita/domain/hololive"
 	"cover-utamita/infrastructure"
 	"encoding/json"
@@ -16,6 +17,7 @@ func App(d *discordgo.Session) error {
 	// hololive
 	today := time.Now().Format("20060102")
 	filename := today + ".json"
+	fmt.Println("実行日： ", time.Now().AddDate(0, 0, consts.BeforeDay))
 	if _, err := os.Stat(filename); err == nil {
 	} else if os.IsNotExist(err) {
 	} else {
