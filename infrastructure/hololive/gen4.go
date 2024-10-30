@@ -25,7 +25,8 @@ func (g Gen4) SearchUtamita() (results []domain.Result, err error) {
 	}
 
 	// 前日の日付を取得
-	yesterday := time.Now().AddDate(0, 0, consts.BeforeDay)
+	loc, _ := time.LoadLocation("Asia/Tokyo")
+	yesterday := time.Now().In(loc).AddDate(0, 0, consts.BeforeDay)
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		return nil, err
