@@ -46,6 +46,11 @@ var (
 		discordId: "1259586334935482468",
 	}
 
-	whole = []HololiveWhole{HololiveAll, HololiveENAll, HololiveIDAll, HololiveDEVIS}
-	Whole = []consts.Constant{HololiveAll, HololiveENAll, HololiveIDAll, HololiveDEVIS}
+	HololiveFlowGlow = HololiveWhole{
+		channelId: "UCu2n3qHuOuQIygREMnWeQWg",
+		discordId: "1304471167587057704",
+	}
+
+	whole = []HololiveWhole{HololiveAll, HololiveENAll, HololiveIDAll, HololiveReGross, HololiveFlowGlow}
+	Whole = []consts.Constant{HololiveAll, HololiveENAll, HololiveIDAll, HololiveReGross, HololiveFlowGlow}
 )
