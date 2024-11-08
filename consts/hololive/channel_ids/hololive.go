@@ -41,7 +41,7 @@ var (
 		discordId: "1259585707219877931",
 	}
 
-	HololiveDEVIS = HololiveWhole{
+	HololiveReGross = HololiveWhole{
 		channelId: "UC10wVt6hoQiwySRhz7RdOUA",
 		discordId: "1259586334935482468",
 	}
