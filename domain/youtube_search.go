@@ -53,9 +53,9 @@ func titleRetrieval(title string) bool {
 
 	return strings.Contains(title, consts.Utattemita) ||
 		strings.Contains(strings.ToLower(title), consts.Cover) ||
-		strings.Contains(title, consts.OriginalSong) ||
-		strings.Contains(title, consts.Original) ||
+		strings.Contains(strings.ToLower(title), consts.OriginalSong) ||
+		strings.Contains(strings.ToLower(title), consts.Original) ||
 		strings.Contains(strings.ToLower(title), consts.CoveredBy) ||
-		strings.Contains(title, consts.Mv) ||
+		strings.Contains(strings.ToLower(title), consts.Mv) ||
 		strings.Contains(strings.ToLower(title), consts.Official)
 }

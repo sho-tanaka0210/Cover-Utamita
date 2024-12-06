@@ -12,10 +12,10 @@ const (
 const (
 	Utattemita   string = "歌ってみた"
 	Cover        string = "cover"
-	OriginalSong string = "Original Song"
+	OriginalSong string = "original song"
 	Original     string = "original"
 	CoveredBy    string = "covered by"
-	Mv           string = "MV"
+	Mv           string = "mv"
 	Official     string = "official"
 )
 
