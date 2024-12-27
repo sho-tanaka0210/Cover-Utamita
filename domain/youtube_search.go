@@ -26,6 +26,13 @@ func SearchVideoes(service *youtube.Service, channelId string, publishedAfter st
 		return nil, err
 	}
 
+	var filteredItems []*youtube.SearchResult
+	for _, item := range results.Items {
+		if item.Snippet.LiveBroadcastContent == "none" {
+			filteredItems = append(filteredItems, item)
+		}
+	}
+	results.Items = filteredItems
 	return results, nil
 }
 
