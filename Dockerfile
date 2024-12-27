@@ -1,4 +1,4 @@
-FROM golang:1.20.3-buster
+FROM golang:1.23.4-bullseye
 
 WORKDIR /code/
 
