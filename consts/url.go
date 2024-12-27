@@ -5,7 +5,7 @@ const (
 	SearchVideo string = "https://www.googleapis.com/youtube/v3/videos"
 	Query       string = `歌ってみた Cover cover "Original Song" original "Covered by"`
 	VideoUrl    string = "https://www.youtube.com/watch?v="
-	MaxResults  int64  = 10
+	MaxResults  int64  = 20
 )
 
 // Request Parameter
