@@ -28,7 +28,7 @@ func SearchVideoes(service *youtube.Service, channelId string, publishedAfter st
 
 	var filteredItems []*youtube.SearchResult
 	for _, item := range results.Items {
-		if item.Snippet.LiveBroadcastContent == "none" {
+		if item.Snippet.LiveBroadcastContent != "upcoming" {
 			filteredItems = append(filteredItems, item)
 		}
 	}
