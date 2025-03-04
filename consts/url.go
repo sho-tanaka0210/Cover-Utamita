@@ -10,13 +10,14 @@ const (
 
 // Request Parameter
 const (
-	Utattemita   string = "歌ってみた"
-	Cover        string = "cover"
-	OriginalSong string = "original song"
-	Original     string = "original"
-	CoveredBy    string = "covered by"
-	Mv           string = "mv"
-	Official     string = "official"
+	Utattemita    string = "歌ってみた"
+	Cover         string = "cover"
+	OriginalSong  string = "original song"
+	Original      string = "original"
+	CoveredBy     string = "covered by"
+	Mv            string = "mv"
+	Official      string = "official"
+	OriginalKyoku string = "オリジナル曲"
 )
 
 // POST

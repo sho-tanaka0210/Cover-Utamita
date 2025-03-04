@@ -64,5 +64,6 @@ func titleRetrieval(title string) bool {
 		strings.Contains(strings.ToLower(title), consts.Original) ||
 		strings.Contains(strings.ToLower(title), consts.CoveredBy) ||
 		strings.Contains(strings.ToLower(title), consts.Mv) ||
-		strings.Contains(strings.ToLower(title), consts.Official)
+		strings.Contains(strings.ToLower(title), consts.Official) ||
+		strings.Contains(strings.ToLower(title), consts.OriginalKyoku)
 }
