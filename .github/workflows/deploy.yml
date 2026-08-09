@@ -72,16 +72,53 @@ jobs:
           path: cover-utamita
 
       - name: gcloud auth
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_API_KEY }}
 
+      - name: Validate runtime configuration
+        env:
+          SCHEDULER_JOB: ${{ vars.SCHEDULER_JOB }}
+          SCHEDULER_SERVICE_ACCOUNT: ${{ vars.SCHEDULER_SERVICE_ACCOUNT }}
+          RUN_STATE_BUCKET: ${{ vars.RUN_STATE_BUCKET }}
+        run: |
+          # 認証や永続化に必要な値がない状態では、安全でないデプロイを開始しない。
+          if [[ -z "${SCHEDULER_JOB}" || -z "${SCHEDULER_SERVICE_ACCOUNT}" || -z "${RUN_STATE_BUCKET}" ]]; then
+            echo "SCHEDULER_JOB、SCHEDULER_SERVICE_ACCOUNT、RUN_STATE_BUCKET の設定が必要です。" >&2
+            exit 1
+          fi
+
       - name: Deploy to CloudRun
+        id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ secrets.PROJECT_ID }}
           image: ${{ env.IMAGE }}
           region: asia-northeast1
-          flags: '--cpu=1 --memory=128Mi --max-instances=1 --min-instances=0 --allow-unauthenticated'
+          flags: >-
+            --cpu=1 --memory=128Mi --max-instances=1 --min-instances=0
+            --concurrency=1 --no-allow-unauthenticated
+            "--add-volume=mount-path=/var/lib/cover-utamita,type=cloud-storage,bucket=${{ vars.RUN_STATE_BUCKET }},readonly=false,mount-options=uid=65532;gid=65532"
           env_vars: |
             GO_ENV=production
+            RUN_STATE_DIR=/var/lib/cover-utamita
+
+      - name: Configure authenticated Cloud Scheduler invocation
+        env:
+          PROJECT_ID: ${{ secrets.PROJECT_ID }}
+          SERVICE_URL: ${{ steps.deploy.outputs.url }}
+          SCHEDULER_JOB: ${{ vars.SCHEDULER_JOB }}
+          SCHEDULER_SERVICE_ACCOUNT: ${{ vars.SCHEDULER_SERVICE_ACCOUNT }}
+        run: |
+          gcloud run services add-iam-policy-binding "${PROJECT_ID}" \
+            --region=asia-northeast1 \
+            --member="serviceAccount:${SCHEDULER_SERVICE_ACCOUNT}" \
+            --role=roles/run.invoker
+
+          gcloud scheduler jobs update http "${SCHEDULER_JOB}" \
+            --location=asia-northeast1 \
+            --uri="${SERVICE_URL}/run" \
+            --http-method=POST \
+            --oidc-service-account-email="${SCHEDULER_SERVICE_ACCOUNT}" \
+            --oidc-token-audience="${SERVICE_URL}"
