@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"cover-utamita/config"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -10,49 +12,45 @@ import (
 )
 
 func main() {
+	config.LoadEnv()
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "80"
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		config.LoadEnv()
-
-		botToken := os.Getenv("BOT_TOKEN")
-		fmt.Println("BOTを実行します。")
-		discord, err := discordgo.New("Bot " + botToken)
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "BOTのログインに失敗しました: %v", err)
-			discord.Close()
-			return
-		}
-
-		err = discord.Open()
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "疎通に失敗しました。: %v", err)
-			discord.Close()
-			return
-		}
-
-		err = App(discord)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprintf(w, "YouTubeAPIによる取得、もしくはDiscordへの投稿に失敗しました。 : %v", err)
-			discord.Close()
-			return
-		}
-
-		discord.Close()
-
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, "BOTを終了します。")
-	})
-
-	fmt.Println("Server is listening on port " + port + "...")
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		panic(err)
+	stateDir := os.Getenv("RUN_STATE_DIR")
+	if stateDir == "" {
+		stateDir = "/tmp/cover-utamita"
 	}
+
+	handler := newHTTPHandler(newRunGuard(stateDir), runBot, nil)
+	server := &http.Server{
+		Addr:    ":" + port,
+		Handler: handler,
+	}
+
+	log.Printf("Server is listening on port %s...", port)
+	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
+}
+
+func runBot(_ context.Context) error {
+	botToken := os.Getenv("BOT_TOKEN")
+	discord, err := discordgo.New("Bot " + botToken)
+	if err != nil {
+		return fmt.Errorf("BOTのログインに失敗しました: %w", err)
+	}
+
+	if err := discord.Open(); err != nil {
+		return fmt.Errorf("Discordとの疎通に失敗しました: %w", err)
+	}
+	defer discord.Close()
+
+	if err := App(discord); err != nil {
+		return fmt.Errorf("YouTube APIによる取得、もしくはDiscordへの投稿に失敗しました: %w", err)
+	}
+
+	return nil
 }
