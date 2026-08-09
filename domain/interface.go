@@ -14,5 +14,10 @@ type Group interface {
 }
 
 type Post interface {
-	SendMessage(d *discordgo.Session) error
+	SendMessage(d DiscordMessenger) error
+}
+
+type DiscordMessenger interface {
+	ChannelMessages(channelID string, limit int, beforeID, afterID, aroundID string, options ...discordgo.RequestOption) ([]*discordgo.Message, error)
+	ChannelMessageSend(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error)
 }
