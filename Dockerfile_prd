@@ -1,4 +1,4 @@
-FROM golang:1.23.4-bullseye AS build
+FROM golang:1.26.5-bookworm AS build
 
 WORKDIR /code/
 
@@ -9,15 +9,17 @@ COPY . /code/
 
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o cover-utamita-bot
 
-FROM alpine:3.17.3
+RUN install -d -m 0755 /out/app && \
+  install -m 0755 /code/cover-utamita-bot /out/app/cover-utamita-bot
+
+FROM gcr.io/distroless/static-debian13:nonroot
+
+COPY --from=build --chown=nonroot:nonroot /out/app /app
 
 WORKDIR /app
 
-RUN apk --update add --no-cache ca-certificates
-RUN apk --update add --no-cache tzdata
-
-COPY --from=build /code/cover-utamita-bot /app
+USER nonroot:nonroot
 
 EXPOSE 80
 
-CMD ["./cover-utamita-bot"]
+CMD ["/app/cover-utamita-bot"]
