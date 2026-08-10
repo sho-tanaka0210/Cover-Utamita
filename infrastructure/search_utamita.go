@@ -16,33 +16,44 @@ type UtamitaSearcher struct {
 }
 
 // 歌ってみたの検索
-func (g UtamitaSearcher) SearchUtamita(members []consts.Constant) (results []domain.Result, err error) {
+func (g UtamitaSearcher) SearchUtamita(members []consts.Constant) (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
 
 	service, err := g.prepareService()
 	if err != nil {
-		return nil, err
+		return nil, quotaUsage, err
 	}
 
-	// 前日の日付を取得
-	loc, _ := time.LoadLocation("Asia/Tokyo")
-	yesterday := time.Now().In(loc).AddDate(0, 0, consts.BeforeDay)
 	jst, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
-		return nil, err
+		return nil, quotaUsage, err
 	}
-	t := time.Date(yesterday.Year(), yesterday.Month(), yesterday.Day(), 0, 0, 0, 0, jst)
+	publishedAfter, publishedBefore := previousDayPeriod(time.Now(), jst)
 
 	for _, member := range members {
-		response, err := domain.SearchVideoes(service, member.ChannelId(), t.Format(time.RFC3339), consts.MaxResults)
+		items, memberQuotaUsage, err := domain.SearchVideos(
+			service,
+			member.ChannelId(),
+			publishedAfter.Format(time.RFC3339),
+			publishedBefore.Format(time.RFC3339),
+			consts.MaxResults,
+		)
+		quotaUsage.SearchListRequests += memberQuotaUsage.SearchListRequests
+		quotaUsage.Units += memberQuotaUsage.Units
 		if err != nil {
-			fmt.Printf("APIリクエストに失敗しました: %v", err)
-			return nil, err
+			return nil, quotaUsage, err
 		}
 
-		results = append(results, domain.VideoRetrieval(response.Items, member)...)
+		results = append(results, domain.VideoRetrieval(items, member)...)
 	}
 
-	return results, nil
+	return results, quotaUsage, nil
+}
+
+func previousDayPeriod(now time.Time, location *time.Location) (time.Time, time.Time) {
+	today := now.In(location)
+	publishedBefore := time.Date(today.Year(), today.Month(), today.Day(), 0, 0, 0, 0, location)
+	publishedAfter := publishedBefore.AddDate(0, 0, consts.BeforeDay)
+	return publishedAfter, publishedBefore
 }
 
 // YouTube検索のためのサービス

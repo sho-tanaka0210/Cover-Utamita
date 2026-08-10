@@ -8,9 +8,14 @@ type Result struct {
 	Url       string `json:"url"`
 }
 
+type QuotaUsage struct {
+	SearchListRequests int64
+	Units              int64
+}
+
 type Group interface {
 	// 歌ってみたの検索
-	SearchUtamita() (results []Result, err error)
+	SearchUtamita() (results []Result, quotaUsage QuotaUsage, err error)
 }
 
 type Post interface {

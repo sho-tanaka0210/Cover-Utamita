@@ -26,7 +26,8 @@ func App(d coreDomain.DiscordMessenger) error {
 		return err
 	}
 
-	r, err := hololiveDomain.SearchVideoes()
+	r, quotaUsage, err := hololiveDomain.SearchVideoes()
+	fmt.Printf("YouTube APIクォータ使用量: search.list=%d回, %d単位\n", quotaUsage.SearchListRequests, quotaUsage.Units)
 	if err != nil {
 		fmt.Printf("YouTubeAPIによる取得に失敗しました。 : %v", err)
 		return err
