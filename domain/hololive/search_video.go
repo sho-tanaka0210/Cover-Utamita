@@ -30,6 +30,7 @@ func SearchVideoes() (results []domain.Result, err error) {
 
 		infrastructure.ReGross{Members: consts.ReGrosses},
 		infrastructure.FlowGlow{Members: consts.FlowGlows},
+		infrastructure.AsobiMawaritai{Members: consts.AsobiMawaritais},
 
 		// ID
 		infrastructure.IdGen1{Members: consts.IdGen1s},
