@@ -12,28 +12,48 @@ import (
 //
 //	service:        YouTube Serviceクライアント
 //	channelId:      指定のチャンネルID
-//	publishedAfter: どれくらい前の日付から検索するか
+//	publishedAfter: 検索対象期間の開始日時
+//	publishedBefore: 検索対象期間の終了日時
 //	maxResults:     検索結果の最大数
 //
 //	results:        検索結果
+//	quotaUsage:     APIリクエスト数とクォータ消費量
 //	err:            エラー
-func SearchVideoes(service *youtube.Service, channelId string, publishedAfter string, maxResults int64) (results *youtube.SearchListResponse, err error) {
-
-	call := service.Search.List([]string{"id", "snippet"}).ChannelId(channelId).PublishedAfter(publishedAfter).MaxResults(maxResults)
-	results, err = call.Do()
-	if err != nil {
-		fmt.Printf("APIリクエストに失敗しました: %v", err)
-		return nil, err
-	}
-
-	var filteredItems []*youtube.SearchResult
-	for _, item := range results.Items {
-		if item.Snippet.LiveBroadcastContent != "upcoming" {
-			filteredItems = append(filteredItems, item)
+func SearchVideos(service *youtube.Service, channelId string, publishedAfter string, publishedBefore string, maxResults int64) (results []*youtube.SearchResult, quotaUsage QuotaUsage, err error) {
+	pageToken := ""
+	for {
+		call := service.Search.List([]string{"snippet"}).
+			ChannelId(channelId).
+			PublishedAfter(publishedAfter).
+			PublishedBefore(publishedBefore).
+			MaxResults(maxResults).
+			Order("date").
+			Q(consts.Query).
+			Type("video")
+		if pageToken != "" {
+			call.PageToken(pageToken)
 		}
+
+		// 失敗したリクエストもクォータ対象になるため、送信前に加算する。
+		quotaUsage.SearchListRequests++
+		quotaUsage.Units += consts.SearchListQuotaUnits
+		response, requestErr := call.Do()
+		if requestErr != nil {
+			return nil, quotaUsage, fmt.Errorf("APIリクエストに失敗しました: %w", requestErr)
+		}
+
+		for _, item := range response.Items {
+			if item != nil && item.Snippet != nil && item.Snippet.LiveBroadcastContent != "upcoming" {
+				results = append(results, item)
+			}
+		}
+		if response.NextPageToken == "" {
+			break
+		}
+		pageToken = response.NextPageToken
 	}
-	results.Items = filteredItems
-	return results, nil
+
+	return results, quotaUsage, nil
 }
 
 // ChannelIdやPublishedAfterからとってきた動画から、動画タイトルによる動画抽出を行う。
@@ -44,11 +64,10 @@ func SearchVideoes(service *youtube.Service, channelId string, publishedAfter st
 //	results: 抽出結果
 func VideoRetrieval(items []*youtube.SearchResult, member consts.Constant) (results []Result) {
 	for _, item := range items {
-		if item.Id.Kind == "youtube#video" {
+		if item != nil && item.Id != nil && item.Snippet != nil && item.Id.Kind == "youtube#video" {
 			title := item.Snippet.Title
 			if titleRetrieval(title) {
-
-				results = append(results, Result{ChannelId: item.Id.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
+				results = append(results, Result{ChannelId: item.Snippet.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
 			}
 		}
 	}
@@ -57,13 +76,13 @@ func VideoRetrieval(items []*youtube.SearchResult, member consts.Constant) (resu
 }
 
 func titleRetrieval(title string) bool {
-
+	title = strings.ToLower(title)
 	return strings.Contains(title, consts.Utattemita) ||
-		strings.Contains(strings.ToLower(title), consts.Cover) ||
-		strings.Contains(strings.ToLower(title), consts.OriginalSong) ||
-		strings.Contains(strings.ToLower(title), consts.Original) ||
-		strings.Contains(strings.ToLower(title), consts.CoveredBy) ||
-		strings.Contains(strings.ToLower(title), consts.Mv) ||
-		strings.Contains(strings.ToLower(title), consts.Official) ||
-		strings.Contains(strings.ToLower(title), consts.OriginalKyoku)
+		strings.Contains(title, consts.Cover) ||
+		strings.Contains(title, consts.OriginalSong) ||
+		strings.Contains(title, consts.Original) ||
+		strings.Contains(title, consts.CoveredBy) ||
+		strings.Contains(title, consts.Mv) ||
+		strings.Contains(title, consts.Official) ||
+		strings.Contains(title, consts.OriginalKyoku)
 }

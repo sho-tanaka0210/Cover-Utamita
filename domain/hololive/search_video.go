@@ -8,10 +8,10 @@ import (
 
 // 指定の所属グループの歌ってみた動画を取得する。
 //
-// 範囲: 実行日から24時間の範囲
+// 範囲: 日本時間の前日0時以上、当日0時未満
 //
 // 結果: 各チャンネルの歌ってみた動画の一覧
-func SearchVideoes() (results []domain.Result, err error) {
+func SearchVideoes() (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
 
 	hololive := []domain.Group{
 		// ALL
@@ -45,13 +45,15 @@ func SearchVideoes() (results []domain.Result, err error) {
 	}
 
 	for _, members := range hololive {
-		r, err := members.SearchUtamita()
+		r, groupQuotaUsage, err := members.SearchUtamita()
+		quotaUsage.SearchListRequests += groupQuotaUsage.SearchListRequests
+		quotaUsage.Units += groupQuotaUsage.Units
 		if err != nil {
-			return nil, err
+			return nil, quotaUsage, err
 		}
 
 		results = append(results, r...)
 	}
 
-	return results, nil
+	return results, quotaUsage, nil
 }

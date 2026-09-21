@@ -16,6 +16,10 @@
 - `GET /healthz`: ヘルスチェック。YouTube API や Discord には接続しない。
 - `POST /run`: 前日分の検索・投稿を実行する。Cloud Run IAM で認証された Bearer トークンが必要。
 
+検索対象期間は日本時間の前日 00:00 以上、当日 00:00 未満。実行ログの
+`YouTube APIクォータ使用量` で、1 回の定期実行における `search.list` の
+リクエスト回数とクォータ消費量を確認できる。
+
 Cloud Run は非公開、最大インスタンス数と同時実行数はともに 1 でデプロイする。
 デプロイ前に GitHub Actions の Repository variables に、既存の Cloud Scheduler
 ジョブ名 `SCHEDULER_JOB` と、`roles/run.invoker` を付与する呼び出し元サービス

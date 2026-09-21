@@ -11,7 +11,7 @@ type AsobiMawaritai struct {
 	Members []consts.Constant
 }
 
-func (g AsobiMawaritai) SearchUtamita() (results []domain.Result, err error) {
+func (g AsobiMawaritai) SearchUtamita() (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
 
 	searcher := infrastructure.UtamitaSearcher{ApiKey: os.Getenv("YOUTUBE_API_KEY")}
 	return searcher.SearchUtamita(g.Members)

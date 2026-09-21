@@ -12,7 +12,7 @@ type Advent struct {
 }
 
 // 歌ってみたの検索
-func (g Advent) SearchUtamita() (results []domain.Result, err error) {
+func (g Advent) SearchUtamita() (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
 
 	searcher := infrastructure.UtamitaSearcher{ApiKey: os.Getenv("YOUTUBE_API_KEY")}
 	return searcher.SearchUtamita(g.Members)
