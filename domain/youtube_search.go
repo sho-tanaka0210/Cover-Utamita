@@ -2,6 +2,7 @@ package domain
 
 import (
 	"cover-utamita/consts"
+	channelids "cover-utamita/consts/hololive/channel_ids"
 	"fmt"
 	"strings"
 
@@ -62,12 +63,12 @@ func SearchVideos(service *youtube.Service, channelId string, publishedAfter str
 //	member: 検索をしているメンバー情報
 //
 //	results: 抽出結果
-func VideoRetrieval(items []*youtube.SearchResult, member consts.Constant) (results []Result) {
+func VideoRetrieval(items []*youtube.SearchResult, member channelids.Member) (results []Result) {
 	for _, item := range items {
 		if item != nil && item.Id != nil && item.Snippet != nil && item.Id.Kind == "youtube#video" {
 			title := item.Snippet.Title
 			if titleRetrieval(title) {
-				results = append(results, Result{ChannelId: item.Snippet.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordId()})
+				results = append(results, Result{ChannelId: item.Snippet.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordChannelID})
 			}
 		}
 	}

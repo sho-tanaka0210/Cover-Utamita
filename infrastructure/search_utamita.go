@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"context"
 	"cover-utamita/consts"
+	channelids "cover-utamita/consts/hololive/channel_ids"
 	"cover-utamita/domain"
 	"fmt"
 	"time"
@@ -16,7 +17,7 @@ type UtamitaSearcher struct {
 }
 
 // 歌ってみたの検索
-func (g UtamitaSearcher) SearchUtamita(members []consts.Constant) (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
+func (g UtamitaSearcher) SearchUtamita(members []channelids.Member) (results []domain.Result, quotaUsage domain.QuotaUsage, err error) {
 
 	service, err := g.prepareService()
 	if err != nil {
@@ -32,7 +33,7 @@ func (g UtamitaSearcher) SearchUtamita(members []consts.Constant) (results []dom
 	for _, member := range members {
 		items, memberQuotaUsage, err := domain.SearchVideos(
 			service,
-			member.ChannelId(),
+			member.YouTubeChannelID,
 			publishedAfter.Format(time.RFC3339),
 			publishedBefore.Format(time.RFC3339),
 			consts.MaxResults,

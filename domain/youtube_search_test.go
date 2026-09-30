@@ -3,6 +3,7 @@ package domain
 import (
 	"context"
 	"cover-utamita/consts"
+	channelids "cover-utamita/consts/hololive/channel_ids"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -12,23 +13,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 )
-
-type testMember struct {
-	channelID string
-	discordID string
-}
-
-func (m testMember) ChannelId() string {
-	return m.channelID
-}
-
-func (m testMember) DiscordId() string {
-	return m.discordID
-}
-
-func (m testMember) GetDiscordId(string) string {
-	return m.discordID
-}
 
 func TestSearchVideosUsesConditionsAndRetrievesEveryPage(t *testing.T) {
 	const (
@@ -121,7 +105,7 @@ func TestSearchVideosUsesConditionsAndRetrievesEveryPage(t *testing.T) {
 }
 
 func TestVideoRetrievalUsesSnippetChannelIDAndFiltersTitle(t *testing.T) {
-	member := testMember{channelID: "requested-channel", discordID: "discord"}
+	member := channelids.Member{YouTubeChannelID: "requested-channel", DiscordChannelID: "discord"}
 	items := []*youtube.SearchResult{
 		{
 			Id:      &youtube.ResourceId{Kind: "youtube#video", VideoId: "matched", ChannelId: "wrong-channel"},
