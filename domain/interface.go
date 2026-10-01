@@ -13,11 +13,6 @@ type QuotaUsage struct {
 	Units              int64
 }
 
-type Group interface {
-	// 歌ってみたの検索
-	SearchUtamita() (results []Result, quotaUsage QuotaUsage, err error)
-}
-
 type Post interface {
 	SendMessage(d DiscordMessenger) error
 }
