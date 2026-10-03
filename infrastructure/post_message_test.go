@@ -28,7 +28,7 @@ func TestSendMessageSkipsVideoAlreadyPosted(t *testing.T) {
 		messages: []*discordgo.Message{{Content: videoURL}},
 	}
 
-	if err := (Channel{DiscordId: "channel", Url: "video-id"}).SendMessage(discord); err != nil {
+	if err := (Channel{DiscordID: "channel", URL: "video-id"}).SendMessage(discord); err != nil {
 		t.Fatal(err)
 	}
 	if len(discord.sent) != 0 {
@@ -39,7 +39,7 @@ func TestSendMessageSkipsVideoAlreadyPosted(t *testing.T) {
 func TestSendMessagePostsNewVideo(t *testing.T) {
 	discord := &fakeDiscordMessenger{}
 
-	if err := (Channel{DiscordId: "channel", Url: "video-id"}).SendMessage(discord); err != nil {
+	if err := (Channel{DiscordID: "channel", URL: "video-id"}).SendMessage(discord); err != nil {
 		t.Fatal(err)
 	}
 	if len(discord.sent) != 1 {
@@ -50,7 +50,7 @@ func TestSendMessagePostsNewVideo(t *testing.T) {
 func TestSendMessageDoesNotPostWhenHistoryCannotBeChecked(t *testing.T) {
 	discord := &fakeDiscordMessenger{readErr: errors.New("unavailable")}
 
-	if err := (Channel{DiscordId: "channel", Url: "video-id"}).SendMessage(discord); err == nil {
+	if err := (Channel{DiscordID: "channel", URL: "video-id"}).SendMessage(discord); err == nil {
 		t.Fatal("SendMessage() error = nil, want an error")
 	}
 	if len(discord.sent) != 0 {

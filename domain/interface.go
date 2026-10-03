@@ -3,9 +3,9 @@ package domain
 import "github.com/bwmarrin/discordgo"
 
 type Result struct {
-	DiscordId string `json:"discordId"`
-	ChannelId string `json:"channelId"`
-	Url       string `json:"url"`
+	DiscordID string `json:"discordId"`
+	ChannelID string `json:"channelId"`
+	URL       string `json:"url"`
 }
 
 type QuotaUsage struct {

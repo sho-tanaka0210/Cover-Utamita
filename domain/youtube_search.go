@@ -1,10 +1,8 @@
 package domain
 
 import (
-	"cover-utamita/consts"
 	channelids "cover-utamita/consts/hololive/channel_ids"
 	"fmt"
-	"strings"
 
 	"google.golang.org/api/youtube/v3"
 )
@@ -12,24 +10,27 @@ import (
 // YouTubeAPIを用いて動画検索を行う
 //
 //	service:        YouTube Serviceクライアント
-//	channelId:      指定のチャンネルID
+//	channelID:      指定のチャンネルID
 //	publishedAfter: 検索対象期間の開始日時
 //	publishedBefore: 検索対象期間の終了日時
-//	maxResults:     検索結果の最大数
 //
 //	results:        検索結果
 //	quotaUsage:     APIリクエスト数とクォータ消費量
 //	err:            エラー
-func SearchVideos(service *youtube.Service, channelId string, publishedAfter string, publishedBefore string, maxResults int64) (results []*youtube.SearchResult, quotaUsage QuotaUsage, err error) {
+func SearchVideos(service *youtube.Service, channelID string, publishedAfter string, publishedBefore string) (results []*youtube.SearchResult, quotaUsage QuotaUsage, err error) {
+	// APIの上限まで取得してページ数を抑える。
+	const maxResults int64 = 50
+	// search.list専用枠はリクエスト回数と同じ単位で集計する。
+	const searchListQuotaUnits int64 = 1
 	pageToken := ""
 	for {
 		call := service.Search.List([]string{"snippet"}).
-			ChannelId(channelId).
+			ChannelId(channelID).
 			PublishedAfter(publishedAfter).
 			PublishedBefore(publishedBefore).
 			MaxResults(maxResults).
 			Order("date").
-			Q(consts.Query).
+			Q(searchQuery()).
 			Type("video")
 		if pageToken != "" {
 			call.PageToken(pageToken)
@@ -37,7 +38,7 @@ func SearchVideos(service *youtube.Service, channelId string, publishedAfter str
 
 		// 失敗したリクエストもクォータ対象になるため、送信前に加算する。
 		quotaUsage.SearchListRequests++
-		quotaUsage.Units += consts.SearchListQuotaUnits
+		quotaUsage.Units += searchListQuotaUnits
 		response, requestErr := call.Do()
 		if requestErr != nil {
 			return nil, quotaUsage, fmt.Errorf("APIリクエストに失敗しました: %w", requestErr)
@@ -68,22 +69,10 @@ func VideoRetrieval(items []*youtube.SearchResult, member channelids.Member) (re
 		if item != nil && item.Id != nil && item.Snippet != nil && item.Id.Kind == "youtube#video" {
 			title := item.Snippet.Title
 			if titleRetrieval(title) {
-				results = append(results, Result{ChannelId: item.Snippet.ChannelId, Url: item.Id.VideoId, DiscordId: member.DiscordChannelID})
+				results = append(results, Result{ChannelID: item.Snippet.ChannelId, URL: item.Id.VideoId, DiscordID: member.DiscordChannelID})
 			}
 		}
 	}
 
 	return results
-}
-
-func titleRetrieval(title string) bool {
-	title = strings.ToLower(title)
-	return strings.Contains(title, consts.Utattemita) ||
-		strings.Contains(title, consts.Cover) ||
-		strings.Contains(title, consts.OriginalSong) ||
-		strings.Contains(title, consts.Original) ||
-		strings.Contains(title, consts.CoveredBy) ||
-		strings.Contains(title, consts.Mv) ||
-		strings.Contains(title, consts.Official) ||
-		strings.Contains(title, consts.OriginalKyoku)
 }
