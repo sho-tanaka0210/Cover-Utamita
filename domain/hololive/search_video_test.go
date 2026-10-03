@@ -30,8 +30,8 @@ func TestSearchVideosCombinesGroupsAndQuota(t *testing.T) {
 	}
 	searcher := &fakeUtamitaSearcher{
 		results: [][]domain.Result{
-			{{ChannelId: "youtube-1", DiscordId: "discord-1", Url: "video-1"}},
-			{{ChannelId: "youtube-2", DiscordId: "discord-2", Url: "video-2"}},
+			{{ChannelID: "youtube-1", DiscordID: "discord-1", URL: "video-1"}},
+			{{ChannelID: "youtube-2", DiscordID: "discord-2", URL: "video-2"}},
 		},
 		quotas: []domain.QuotaUsage{{SearchListRequests: 2, Units: 2}, {SearchListRequests: 3, Units: 3}},
 		errors: []error{nil, nil},
@@ -62,8 +62,8 @@ func TestSearchVideosStopsOnErrorAndKeepsQuota(t *testing.T) {
 	searchErr := errors.New("search failed")
 	searcher := &fakeUtamitaSearcher{
 		results: [][]domain.Result{
-			{{ChannelId: "youtube-1"}},
-			{{ChannelId: "youtube-2"}},
+			{{ChannelID: "youtube-1"}},
+			{{ChannelID: "youtube-2"}},
 		},
 		quotas: []domain.QuotaUsage{{SearchListRequests: 2, Units: 2}, {SearchListRequests: 1, Units: 1}},
 		errors: []error{nil, searchErr},

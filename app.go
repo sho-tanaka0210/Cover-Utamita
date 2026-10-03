@@ -1,7 +1,6 @@
 package main
 
 import (
-	"cover-utamita/consts"
 	channelids "cover-utamita/consts/hololive/channel_ids"
 	coreDomain "cover-utamita/domain"
 	hololiveDomain "cover-utamita/domain/hololive"
@@ -18,8 +17,8 @@ func App(d coreDomain.DiscordMessenger) error {
 	// hololive
 	today := time.Now().Format("20060102")
 	filename := today + ".json"
-	loc, _ := time.LoadLocation("Asia/Tokyo")
-	fmt.Println("実行日： ", time.Now().In(loc).AddDate(0, 0, consts.BeforeDay))
+	start, _ := coreDomain.PreviousDayPeriod(time.Now())
+	fmt.Println("実行日： ", start)
 	if _, err := os.Stat(filename); err == nil {
 	} else if os.IsNotExist(err) {
 	} else {
@@ -27,7 +26,7 @@ func App(d coreDomain.DiscordMessenger) error {
 		return err
 	}
 
-	searcher := infrastructure.UtamitaSearcher{ApiKey: os.Getenv("YOUTUBE_API_KEY")}
+	searcher := infrastructure.UtamitaSearcher{APIKey: os.Getenv("YOUTUBE_API_KEY")}
 	r, quotaUsage, err := hololiveDomain.SearchVideos(searcher, channelids.SearchGroups)
 	fmt.Printf("YouTube APIクォータ使用量: search.list=%d回, %d単位\n", quotaUsage.SearchListRequests, quotaUsage.Units)
 	if err != nil {
@@ -48,7 +47,7 @@ func App(d coreDomain.DiscordMessenger) error {
 
 	var postErrors []error
 	for _, v := range r {
-		c := infrastructure.Channel{Url: v.Url, DiscordId: v.DiscordId}
+		c := infrastructure.Channel{URL: v.URL, DiscordID: v.DiscordID}
 		err = c.SendMessage(d)
 		if err != nil {
 			postErrors = append(postErrors, err)

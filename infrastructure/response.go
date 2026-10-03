@@ -5,13 +5,13 @@ type Response struct {
 	ETag string `json:"etag"`
 
 	Items []*struct {
-		Id *struct {
+		ID *struct {
 			Kind    string `json:"kind"`
-			VideoId string `json:"videoId"`
+			VideoID string `json:"videoId"`
 		} `json:"id"`
 
 		Snippet *struct {
-			ChannelId string `json:"channelId"`
+			ChannelID string `json:"channelId"`
 		} `json:"snippet"`
 	} `json:"items"`
 
