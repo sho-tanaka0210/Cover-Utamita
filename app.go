@@ -1,6 +1,7 @@
 package main
 
 import (
+	channelids "cover-utamita/consts/hololive/channel_ids"
 	coreDomain "cover-utamita/domain"
 	hololiveDomain "cover-utamita/domain/hololive"
 	"cover-utamita/infrastructure"
@@ -25,7 +26,8 @@ func App(d coreDomain.DiscordMessenger) error {
 		return err
 	}
 
-	r, quotaUsage, err := hololiveDomain.SearchVideoes()
+	searcher := infrastructure.UtamitaSearcher{APIKey: os.Getenv("YOUTUBE_API_KEY")}
+	r, quotaUsage, err := hololiveDomain.SearchVideos(searcher, channelids.SearchGroups)
 	fmt.Printf("YouTube APIクォータ使用量: search.list=%d回, %d単位\n", quotaUsage.SearchListRequests, quotaUsage.Units)
 	if err != nil {
 		fmt.Printf("YouTubeAPIによる取得に失敗しました。 : %v", err)
