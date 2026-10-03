@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func App(d coreDomain.DiscordMessenger) error {
+func App(d infrastructure.DiscordMessenger) error {
 
 	// hololive
 	today := time.Now().Format("20060102")

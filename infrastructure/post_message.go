@@ -3,14 +3,21 @@ package infrastructure
 import (
 	"cover-utamita/domain"
 	"fmt"
+
+	"github.com/bwmarrin/discordgo"
 )
+
+type DiscordMessenger interface {
+	ChannelMessages(channelID string, limit int, beforeID, afterID, aroundID string, options ...discordgo.RequestOption) ([]*discordgo.Message, error)
+	ChannelMessageSend(channelID string, content string, options ...discordgo.RequestOption) (*discordgo.Message, error)
+}
 
 type Channel struct {
 	DiscordID string
 	URL       string
 }
 
-func (c Channel) SendMessage(d domain.DiscordMessenger) error {
+func (c Channel) SendMessage(d DiscordMessenger) error {
 	videoURL := domain.VideoURL(c.URL)
 	messages, err := d.ChannelMessages(c.DiscordID, 100, "", "", "")
 	if err != nil {
