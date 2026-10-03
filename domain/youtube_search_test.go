@@ -2,7 +2,6 @@ package domain
 
 import (
 	"context"
-	"cover-utamita/consts"
 	channelids "cover-utamita/consts/hololive/channel_ids"
 	"encoding/json"
 	"net/http"
@@ -64,7 +63,7 @@ func TestSearchVideosUsesConditionsAndRetrievesEveryPage(t *testing.T) {
 	}
 	service.BasePath = server.URL + "/"
 
-	items, quotaUsage, err := SearchVideos(service, "channel", publishedAfter, publishedBefore, consts.MaxResults)
+	items, quotaUsage, err := SearchVideos(service, "channel", publishedAfter, publishedBefore)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,8 +73,8 @@ func TestSearchVideosUsesConditionsAndRetrievesEveryPage(t *testing.T) {
 	if items[0].Id.VideoId != "first" || items[1].Id.VideoId != "second" {
 		t.Fatalf("video IDs = %q, %q, want first, second", items[0].Id.VideoId, items[1].Id.VideoId)
 	}
-	if quotaUsage.SearchListRequests != 2 || quotaUsage.Units != 2*consts.SearchListQuotaUnits {
-		t.Fatalf("quota usage = %+v, want 2 requests and %d units", quotaUsage, 2*consts.SearchListQuotaUnits)
+	if quotaUsage.SearchListRequests != 2 || quotaUsage.Units != 2 {
+		t.Fatalf("quota usage = %+v, want 2 requests and 2 units", quotaUsage)
 	}
 	if len(queries) != 2 {
 		t.Fatalf("request count = %d, want 2", len(queries))
@@ -88,7 +87,7 @@ func TestSearchVideosUsesConditionsAndRetrievesEveryPage(t *testing.T) {
 		"publishedBefore": publishedBefore,
 		"maxResults":      "50",
 		"order":           "date",
-		"q":               consts.Query,
+		"q":               `歌ってみた|cover|"original song"|original|"covered by"|mv|official|オリジナル曲`,
 		"type":            "video",
 	}
 	for key, want := range wantConditions {
@@ -121,7 +120,7 @@ func TestVideoRetrievalUsesSnippetChannelIDAndFiltersTitle(t *testing.T) {
 	if len(results) != 1 {
 		t.Fatalf("len(results) = %d, want 1", len(results))
 	}
-	want := Result{ChannelId: "source-channel", Url: "matched", DiscordId: "discord"}
+	want := Result{ChannelID: "source-channel", URL: "matched", DiscordID: "discord"}
 	if results[0] != want {
 		t.Fatalf("result = %+v, want %+v", results[0], want)
 	}
@@ -136,6 +135,10 @@ func TestTitleRetrieval(t *testing.T) {
 		{name: "Japanese", title: "新作を歌ってみた", want: true},
 		{name: "case insensitive", title: "NEW SONG COVER", want: true},
 		{name: "original song", title: "My Original Song", want: true},
+		{name: "covered by", title: "Covered By me", want: true},
+		{name: "mv", title: "New MV", want: true},
+		{name: "official", title: "Official audio", want: true},
+		{name: "original Japanese", title: "オリジナル曲を公開", want: true},
 		{name: "unmatched", title: "ゲーム配信のお知らせ", want: false},
 	}
 

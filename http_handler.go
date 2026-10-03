@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"cover-utamita/consts"
+	"cover-utamita/domain"
 	"fmt"
 	"net/http"
 	"strings"
@@ -40,7 +40,7 @@ func newHTTPHandler(guard *runGuard, run botRunner, now func() time.Time) http.H
 			return
 		}
 
-		targetDate := now().In(jst()).AddDate(0, 0, consts.BeforeDay).Format("2006-01-02")
+		targetDate := domain.PreviousDayDate(now())
 		executed, err := guard.Run(targetDate, func() error {
 			return run(r.Context())
 		})
@@ -64,12 +64,4 @@ func newHTTPHandler(guard *runGuard, run botRunner, now func() time.Time) http.H
 func hasBearerToken(header string) bool {
 	scheme, token, found := strings.Cut(header, " ")
 	return found && strings.EqualFold(scheme, "Bearer") && strings.TrimSpace(token) != ""
-}
-
-func jst() *time.Location {
-	location, err := time.LoadLocation("Asia/Tokyo")
-	if err != nil {
-		return time.FixedZone("JST", 9*60*60)
-	}
-	return location
 }

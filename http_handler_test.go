@@ -66,7 +66,7 @@ func TestRunOnlyAcceptsPost(t *testing.T) {
 func TestRunExecutesTargetDateOnlyOnce(t *testing.T) {
 	var runs atomic.Int32
 	now := func() time.Time {
-		return time.Date(2026, time.August, 9, 12, 0, 0, 0, jst())
+		return time.Date(2026, time.August, 9, 12, 0, 0, 0, time.FixedZone("JST", 9*60*60))
 	}
 	handler := newHTTPHandler(newRunGuard(t.TempDir()), func(context.Context) error {
 		runs.Add(1)

@@ -17,7 +17,7 @@ func SearchVideoes() (results []domain.Result, quotaUsage domain.QuotaUsage, err
 		return nil, quotaUsage, err
 	}
 
-	searcher := infrastructure.UtamitaSearcher{ApiKey: os.Getenv("YOUTUBE_API_KEY")}
+	searcher := infrastructure.UtamitaSearcher{APIKey: os.Getenv("YOUTUBE_API_KEY")}
 	for _, members := range channelids.SearchGroups {
 		r, groupQuotaUsage, err := searcher.SearchUtamita(members)
 		quotaUsage.SearchListRequests += groupQuotaUsage.SearchListRequests
